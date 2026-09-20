@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Railway Gate Status - RailSync</title>
+    <link rel="stylesheet" href="auth.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #1a237e;
+            --navy-dark: #0d1442;
+            --blue: #1565c0;
+            --maroon-red: #b71c1c;
+            --saffron: #ff6f00;
+            --green: #2e7d32;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --border-color: #d0d5dd;
+            
+            --gate-open-bg: #e8f5e9;
+            --gate-open-border: #2e7d32;
+            --gate-closed-bg: #ffebee;
+            --gate-closed-border: #c62828;
+            --selected-card-bg: #e3f2fd;
+            --selected-card-border: #1565c0;
+        }
+
+        body.gate-body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .gate-header {
+            background-color: var(--navy);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-left .emblem {
+            font-size: 24px;
+        }
+
+        .header-title-main {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .header-title-sub {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin: 0;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-weight: 500;
+        }
+
+        .header-right a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            background-color: rgba(255,255,255,0.1);
+            padding: 5px 12px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .header-right a:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        /* Info Banner */
+        .info-banner {
+            background-color: var(--saffron);
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(to right, var(--navy-dark), var(--navy));
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .hero-section h1 {
+            margin: 0 0 10px 0;
+            font-size: 2rem;
+        }
+
+        .hero-section p {
+            margin: 5px 0;
+            opacity: 0.9;
+        }
+
+        /* Main Content */
+        .main-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 30px;
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+        }
+
+        /* Left Column - Crossing List */
+        .crossing-list-col {
+            width: 400px;
+            flex-shrink: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .crossing-list-col {
+                width: 100%;
+            }
+        }
+
+        .crossing-list-title {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--navy);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .crossing-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .crossing-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 15px;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .crossing-card:hover {
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        .crossing-card.selected {
+            border: 2px solid var(--selected-card-border);
+            background-color: var(--selected-card-bg);
+        }
+
+        .crossing-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 1rem;
+            color: var(--navy);
+        }
+        
+        .crossing-info p {
+            margin: 2px 0;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .status-dot.open { background-color: var(--green); }
+        .status-dot.closed { background-color: var(--gate-closed-border); }
+
+        /* Right Column - Status Display */
+        .status-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .main-status-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .main-status-indicator {
+            display: inline-block;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .main-status-indicator.open {
+            background-color: var(--gate-open-bg);
+            color: var(--green);
+            border-left: 6px solid var(--green);
+        }
+
+        .main-status-indicator.closed {
+            background-color: var(--gate-closed-bg);
+            color: var(--gate-closed-border);
+            border-left: 6px solid var(--gate-closed-border);
+        }
+
+        .status-details h2 {
+            margin: 0 0 10px 0;
+            color: var(--navy);
+        }
+        
+        .status-details p {
+            margin: 5px 0;
+            color: var(--text-secondary);
+        }
+
+        .next-event-box {
+            margin-top: 20px;
+            background-color: var(--bg-color);
+            padding: 15px;
+            border-radius: 6px;
+            text-align: left;
+            border-left: 4px solid var(--navy);
+        }
+
+        .next-event-box h4 {
+            margin: 0 0 10px 0;
+            color: var(--text-primary);
+        }
+        
+        .next-event-box p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+
+        /* Leave Now Advisor */
+        .advisor-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .advisor-card h3 {
+            margin: 0 0 15px 0;
+            color: var(--navy);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .advisor-form {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .advisor-form label {
+            font-weight: 500;
+        }
+
+        .advisor-form input {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            width: 80px;
+            font-size: 1rem;
+        }
+
+        .advisor-form button {
+            background-color: var(--blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        .advisor-form button:hover {
+            background-color: #1976d2;
+        }
+
+        .advisor-result {
+            padding: 15px;
+            border-radius: 6px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .advisor-result.positive {
+            display: block;
+            background-color: var(--gate-open-bg);
+            color: var(--green);
+            border: 1px solid #a5d6a7;
+        }
+
+        .advisor-result.negative {
+            display: block;
+            background-color: #fff3e0;
+            color: #e65100;
+            border: 1px solid #ffcc80;
+        }
+        
+        .advisor-result.neutral {
+            display: block;
+            background-color: var(--gate-open-bg);
+            color: var(--green);
+            border: 1px solid #a5d6a7;
+        }
+
+        /* All Gates Overview */
+        .overview-section {
+            max-width: 1200px;
+            margin: 0 auto 40px auto;
+            padding: 0 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .overview-title {
+            font-size: 1.2rem;
+            color: var(--navy);
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .mini-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .mini-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .mini-status {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .mini-status.open { color: var(--green); }
+        .mini-status.closed { color: var(--gate-closed-border); }
+        
+        .mini-next-event {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .gate-footer {
+            background-color: var(--navy-dark);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9rem;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body class="gate-body">
+    <!-- Header -->
+    <header class="gate-header">
+        <div class="header-left">
+            <div class="emblem">🏛️</div>
+            <div>
+                <h1 class="header-title-main">Railway Gate Status</h1>
+                <p class="header-title-sub">Howrah–Gaya–Delhi Corridor • SIH 2026</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <span>भारतीय रेल 🚆</span>
+            <a href="login.html">Back to Login</a>
+        </div>
+    </header>
+
+    <!-- Info Banner -->
+    <div class="info-banner">
+        ⚠ Demonstration Environment — Simulated gate status data • SIH 2026 Prototype
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <h1>🚧 Railway Level Crossing Status</h1>
+        <p>Check if your railway crossing is open before you leave home</p>
+        <p>Howrah–Gaya–Delhi Corridor | 12 Level Crossings Monitored</p>
+    </section>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Left Column -->
+        <div class="crossing-list-col">
+            <h2 class="crossing-list-title">Select Your Crossing</h2>
+            <div class="crossing-list" id="crossing-list-container">
+                <!-- Crossing cards injected by JS -->
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="status-col">
+            <!-- Main Status Display -->
+            <div class="main-status-card" id="main-status-card">
+                <div class="main-status-indicator" id="main-status-indicator">Select a crossing</div>
+                <div class="status-details">
+                    <h2 id="main-status-name">--</h2>
+                    <p id="main-status-location">--</p>
+                </div>
+                <div class="next-event-box" id="main-next-event">
+                    <!-- Next event injected by JS -->
+                </div>
+            </div>
+
+            <!-- Leave Now Advisor -->
+            <div class="advisor-card" id="advisor-card">
+                <h3>🕐 Should I Leave Now?</h3>
+                <div class="advisor-form">
+                    <label for="travel-minutes">How many minutes to reach this crossing?</label>
+                    <input type="number" id="travel-minutes" min="1" max="60" value="15">
+                    <button id="check-route-btn">Check My Route</button>
+                </div>
+                <div class="advisor-result" id="advisor-result">
+                    <!-- Advisor result injected by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- All Gates Overview -->
+    <div class="overview-section">
+        <h2 class="overview-title">All Crossings — Live Status</h2>
+        <div class="overview-grid" id="overview-grid-container">
+            <!-- Mini cards injected by JS -->
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="gate-footer">
+        "Railway Gate Status" • Level Crossing Advisory System • SIH 2026 Prototype • Public Service
+    </footer>
+
+    <script src="gate_app.js"></script>
+</body>
+</html>

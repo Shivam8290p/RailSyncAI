@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authorised Personnel — Railway Operations Planning System</title>
+    <meta name="description" content="Secure authentication portal for the RailSync Railway Operations System — SIH 2026 Prototype.">
+    <link rel="stylesheet" href="auth.css?v=4">
+</head>
+<body class="auth-page">
+
+    <!-- TOP HEADER BAR — Government Style -->
+    <header class="auth-topbar">
+        <div class="topbar-left">
+            <div class="govt-emblem">🏛️</div>
+            <div class="topbar-brand">
+                <div class="topbar-title">RailSync</div>
+                <div class="topbar-sub">Railway Operations Planning System • SIH 2026</div>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-tag">भारतीय रेल</div>
+            <div class="ir-emblem">🚆</div>
+        </div>
+    </header>
+
+    <!-- DEMO ENVIRONMENT BANNER -->
+    <div class="demo-banner">
+        ⚠ Restricted Access Environment — Authorised Personnel Only • SIH 2026
+    </div>
+
+    <!-- HERO BANNER - Train Image -->
+    <div class="hero-banner">
+        <img src="train_banner.png" alt="Indian Railways - Vande Bharat Express" class="hero-img">
+        <div class="hero-overlay">
+            <div class="hero-text">
+                <h1>Railway Operations — Authorised Access</h1>
+                <p>Restricted system for authorised railway personnel only</p>
+            </div>
+            <div class="hero-badges">
+                <span class="hero-badge">Safety</span>
+                <span class="hero-badge">Security</span>
+                <span class="hero-badge">Punctuality</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN AUTH CONTAINER -->
+    <div class="auth-container">
+        <div class="auth-form-panel">
+            <div class="login-card">
+                <div class="login-header">
+                    <h2>🔒 Authorised Personnel Login</h2>
+                    <p>Enter your railway employee credentials</p>
+                </div>
+
+                <!-- Error message -->
+                <div class="form-error" id="formError" role="alert">
+                    <span class="form-error-icon">⚠</span>
+                    <span id="formErrorMsg"></span>
+                </div>
+
+                <form id="loginForm" novalidate autocomplete="on">
+                    <div class="form-group">
+                        <label for="employeeId" class="form-label">Employee ID</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="employeeId" name="username" class="form-input" placeholder="Enter your Employee ID" autocomplete="username" required aria-required="true">
+                        </div>
+                        <div class="field-error" id="employeeIdError" role="alert"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="password" name="password" class="form-input" placeholder="Enter your password" autocomplete="current-password" required aria-required="true">
+                            <button type="button" class="password-toggle" id="passwordToggle" aria-label="Show password" tabindex="0">👁️</button>
+                        </div>
+                        <div class="field-error" id="passwordError" role="alert"></div>
+                    </div>
+
+                    <div class="form-row">
+                        <label class="remember-check">
+                            <input type="checkbox" id="rememberMe">
+                            <span>Remember me</span>
+                        </label>
+                        <button type="button" class="forgot-link" id="forgotLink">Forgot password?</button>
+                    </div>
+
+                    <button type="submit" class="btn-login" id="loginSubmit">Sign In</button>
+
+                    <!-- Security badge -->
+                    <div class="security-badge" style="text-align: center; margin-top: 14px; font-size: 0.72rem; color: var(--text-dim); letter-spacing: 0.3px;">
+                        🔒 Restricted Access — Railway Officials Only
+                    </div>
+                </form>
+
+                <div class="login-divider">Demo Access</div>
+                <button type="button" class="btn-demo-creds" id="demoCreds">View Demo Credentials</button>
+
+                <div class="admin-link-section">
+                    <a href="login.html" class="admin-link">← Back to User Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEMO CREDENTIALS POPUP -->
+    <div class="demo-popup-overlay" id="demoPopup">
+        <div class="demo-popup" role="dialog" aria-label="Demo Credentials">
+            <h3>Demo Credentials</h3>
+            <p class="demo-popup-subtitle">Click any account to autofill the login form. These are synthetic demo accounts only.</p>
+
+            <div class="demo-user-card" data-empid="COA001" data-pwd="Demo@123">
+                <div class="demo-user-info">
+                    <h4>Kavitha Subhramanyam</h4>
+                    <p>Control Office</p>
+                </div>
+                <div class="demo-user-creds">
+                    <div><strong>COA001</strong></div>
+                    <div>Demo@123</div>
+                </div>
+            </div>
+
+            <div class="demo-user-card" data-empid="MPL001" data-pwd="Demo@123">
+                <div class="demo-user-info">
+                    <h4>Srinivasan.J.</h4>
+                    <p>Maintenance Planner</p>
+                </div>
+                <div class="demo-user-creds">
+                    <div><strong>MPL001</strong></div>
+                    <div>Demo@123</div>
+                </div>
+            </div>
+
+            <div class="demo-user-card" data-empid="ENG001" data-pwd="Demo@123">
+                <div class="demo-user-info">
+                    <h4>Vikram Singh</h4>
+                    <p>Engineering Officer</p>
+                </div>
+                <div class="demo-user-creds">
+                    <div><strong>ENG001</strong></div>
+                    <div>Demo@123</div>
+                </div>
+            </div>
+
+            <div class="demo-user-card" data-empid="TD001" data-pwd="Demo@123">
+                <div class="demo-user-info">
+                    <h4>Anita Desai</h4>
+                    <p>Traction Distribution Officer</p>
+                </div>
+                <div class="demo-user-creds">
+                    <div><strong>TD001</strong></div>
+                    <div>Demo@123</div>
+                </div>
+            </div>
+
+            <div class="demo-user-card" data-empid="SNT001" data-pwd="Demo@123">
+                <div class="demo-user-info">
+                    <h4>Suresh Kumar</h4>
+                    <p>S&amp;T Officer</p>
+                </div>
+                <div class="demo-user-creds">
+                    <div><strong>SNT001</strong></div>
+                    <div>Demo@123</div>
+                </div>
+            </div>
+
+            <div class="demo-user-card" data-empid="ADMIN001" data-pwd="Admin@123">
+                <div class="demo-user-info">
+                    <h4>Admin User</h4>
+                    <p>Administrator</p>
+                </div>
+                <div class="demo-user-creds">
+                    <div><strong>ADMIN001</strong></div>
+                    <div>Admin@123</div>
+                </div>
+            </div>
+
+            <button class="demo-popup-close" id="demoPopupClose">Close</button>
+        </div>
+    </div>
+
+    <!-- FORGOT PASSWORD MODAL -->
+    <div class="forgot-overlay" id="forgotOverlay">
+        <div class="forgot-modal" role="dialog" aria-label="Reset Password">
+            <h3>Reset Password</h3>
+            <p class="forgot-subtitle">Enter your Employee ID and registered email. Password reset instructions will be sent to your registered contact.</p>
+
+            <form id="forgotForm">
+                <div class="form-group">
+                    <label for="forgotEmpId" class="form-label">Employee ID</label>
+                    <input type="text" id="forgotEmpId" class="form-input" placeholder="Enter your employee ID" required>
+                </div>
+                <div class="form-group">
+                    <label for="forgotEmail" class="form-label">Registered Email</label>
+                    <input type="email" id="forgotEmail" class="form-input" placeholder="Enter your registered email" required>
+                </div>
+                <button type="submit" class="btn-forgot-submit">Send Reset Instructions</button>
+            </form>
+
+            <div class="forgot-success" id="forgotSuccess">
+                <div class="forgot-success-icon">✅</div>
+                <h4>Instructions Sent</h4>
+                <p>Password reset instructions have been sent to your registered contact. Please check your email and follow the instructions to reset your password.</p>
+                <p style="margin-top: 10px; font-size: 0.72rem; color: var(--text-dim); font-style: italic;">(Simulated — no actual email sent in this demo)</p>
+            </div>
+
+            <div class="forgot-modal-actions">
+                <button type="button" class="btn-forgot-back" id="forgotBack">Cancel</button>
+                <button type="button" class="btn-forgot-back" id="forgotCloseBtn" style="display: none;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUCCESS TRANSITION OVERLAY -->
+    <div class="auth-success-overlay" id="successOverlay">
+        <div class="success-checkmark">✓</div>
+        <div class="success-text" id="successName">Authentication successful</div>
+        <div class="success-subtext">Loading your operations workspace...</div>
+        <div class="success-loader">
+            <div class="success-loader-bar"></div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="auth-footer">
+        <strong>RailSync</strong> <span>•</span>
+        Railway Infrastructure Planning &amp; Decision Support <span>•</span>
+        SIH 2026 Prototype <span>•</span>
+        Authorized Personnel Only
+    </footer>
+
+    <script src="auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RailSync — Railway Operations Planning System | SIH 2026</title>
+    <link rel="stylesheet" href="styles.css?v=2">
+    <link rel="stylesheet" href="network-control.css?v=2">
+</head>
+<body>
+
+    <!-- Government Sidebar Navigation -->
+    <nav class="global-nav">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">IR</div>
+            <div>
+                <div class="sidebar-title">RailSync</div>
+                <div class="sidebar-subtitle">SIH 2026 Prototype</div>
+            </div>
+        </div>
+
+        <div class="sidebar-section-label">Main</div>
+        <div class="nav-item active" id="nav-dashboard" title="Dashboard" onclick="switchPage('dashboard')">
+            <span class="nav-icon">📊</span>
+            <span class="nav-label">Dashboard</span>
+        </div>
+
+        <div class="sidebar-section-label">Maintenance</div>
+        <div class="nav-item" id="nav-maintenance" title="Maintenance Tasks" onclick="switchPage('maintenance')">
+            <span class="nav-icon">🔧</span>
+            <span class="nav-label">Maintenance Tasks</span>
+        </div>
+        <div class="nav-item" id="nav-defects" title="Defect Log" onclick="switchPage('defects')">
+            <span class="nav-icon">⚠</span>
+            <span class="nav-label">Defect Log</span>
+        </div>
+        <div class="nav-item" id="nav-assets" title="Asset Inventory" onclick="switchPage('assets')">
+            <span class="nav-icon">🛤</span>
+            <span class="nav-label">Asset Inventory</span>
+        </div>
+
+        <div class="sidebar-section-label">Communication</div>
+        <div class="nav-item" id="nav-cris" title="CRIS Message" onclick="switchPage('cris')">
+            <span class="nav-icon">📡</span>
+            <span class="nav-label">CRIS Message</span>
+        </div>
+
+        <div class="sidebar-section-label">Monitoring</div>
+        <div class="nav-item" id="nav-network" title="Live Railway Network" onclick="switchPage('network')">
+            <span class="nav-icon">🌐</span>
+            <span class="nav-label">Network Control</span>
+        </div>
+    </nav>
+
+    <div class="app-content-wrapper">
+
+        <!-- Government Utility Bar -->
+        <div class="gov-utility-bar">
+            <div class="gov-utility-left">
+                Railway Operations Planning System — SIH 2026 Prototype
+            </div>
+            <div class="gov-utility-right">
+                <a href="#">Help</a>
+                <span>|</span>
+                <a href="#">Contact</a>
+                <span>|</span>
+                <span id="headerDateTime"></span>
+            </div>
+        </div>
+
+        <!-- App Header -->
+        <header class="app-header">
+            <div class="logo-container">
+                <div class="logo-text">
+                    <h1>RailSync</h1>
+                    <p>Automatic Block Planning & Asset Availability Management</p>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <div class="header-status">
+                    <span class="status-pulse"></span>
+                    <span>System Operational</span>
+                </div>
+                <button class="btn-secondary" onclick="location.reload()">↻ Refresh</button>
+                <div id="userProfile"></div>
+            </div>
+        </header>
+
+    <!-- Page: Dashboard -->
+    <div id="page-dashboard" class="page-view active-page">
+        <main class="dashboard-container">
+
+        <!-- Left Sidebar - Controls & Ingestion -->
+        <aside class="sidebar">
+
+            <!-- Controls Panel -->
+            <section class="glass-panel">
+                <h3 class="control-title">AI Solver Console</h3>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Punctuality Weight (w1)</span>
+                        <span id="w1Val">70%</span>
+                    </div>
+                    <input type="range" id="w1Slider" min="0" max="100" value="70" class="slider-input">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Maintenance Weight (w3)</span>
+                        <span id="w3Val">30%</span>
+                    </div>
+                    <input type="range" id="w3Slider" min="0" max="100" value="30" class="slider-input">
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 600;">AI Optimization Model</label>
+                    <select style="width:100%; padding: 10px; background: #ffffff; border: 1px solid var(--border-color); border-radius: 5px; color: var(--text-main); font-family: var(--font-body); outline: none; font-size: 0.85rem;">
+                        <option value="milp">Google OR-Tools CP-SAT (MILP)</option>
+                        <option value="rl">Deep Q-Network (Real-time RL)</option>
+                        <option value="ga">Hybrid Genetic Algorithm</option>
+                    </select>
+                </div>
+
+                <button class="btn-primary" id="optButton">
+                    <span>⚡</span> Run AI Optimization
+                </button>
+
+                <!-- CRIS moved to sidebar nav -->
+            </section>
+
+            <!-- Pending Maintenance Requests -->
+            <section class="glass-panel" style="flex-grow: 1;">
+                <h3 class="control-title">
+                    <span>Pending Block Requests (3)</span>
+                    <span style="font-size: 0.72rem; color: var(--success); font-weight: 500;">● Live Feed</span>
+                </h3>
+
+                <div class="requests-list">
+                    <div class="request-card engg">
+                        <div class="request-header">
+                            <span class="dept-badge">Civil Engg</span>
+                            <span>BLK-001</span>
+                        </div>
+                        <h4 class="request-title">Track Tamping (CSM-49)</h4>
+                        <div class="request-details">
+                            <span>Sec: KJM - WFD</span>
+                            <span style="color: var(--danger);">10:00 - 13:00</span>
+                        </div>
+                    </div>
+
+                    <div class="request-card ohe">
+                        <div class="request-header">
+                            <span class="dept-badge">Elec / TRD</span>
+                            <span>BLK-002</span>
+                        </div>
+                        <h4 class="request-title">OHE Wire Replacement</h4>
+                        <div class="request-details">
+                            <span>Sec: KJM - WFD</span>
+                            <span style="color: var(--danger);">11:30 - 13:30</span>
+                        </div>
+                    </div>
+
+                    <div class="request-card st">
+                        <div class="request-header">
+                            <span class="dept-badge">S&T</span>
+                            <span>BLK-003</span>
+                        </div>
+                        <h4 class="request-title">Point Machine Testing</h4>
+                        <div class="request-details">
+                            <span>Sec: WFD Yard</span>
+                            <span style="color: var(--danger);">15:00 - 16:30</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </aside>
+
+        <!-- Right Side - Visualizer & Logs -->
+        <div class="main-content">
+
+            <!-- Metrics Bar -->
+            <div class="metrics-row">
+                <div class="glass-panel metric-card">
+                    <div class="metric-header">Train Delay Minutes</div>
+                    <div class="metric-value" id="kpiDelayVal">
+                        165m
+                    </div>
+                    <div class="metric-change" id="kpiDelayChg">Base</div>
+                    <div class="metric-footer">Across SBC-BWT division today</div>
+                </div>
+
+                <div class="glass-panel metric-card engg">
+                    <div class="metric-header">Block Sync Efficiency</div>
+                    <div class="metric-value" id="kpiEffVal">
+                        58.0%
+                    </div>
+                    <div class="metric-change" id="kpiEffChg">Base</div>
+                    <div class="metric-footer">Overlapping block integration rate</div>
+                </div>
+
+                <div class="glass-panel metric-card ohe">
+                    <div class="metric-header">Asset Availability Index</div>
+                    <div class="metric-value" id="kpiAvailVal">
+                        94.2%
+                    </div>
+                    <div class="metric-change" id="kpiAvailChg">Base</div>
+                    <div class="metric-footer">Target: >95.0% for track corridor</div>
+                </div>
+
+                <div class="glass-panel metric-card st">
+                    <div class="metric-header">Scheduled Maintenance</div>
+                    <div class="metric-value" id="kpiBlocksVal">
+                        3 Siloed
+                    </div>
+                    <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px;">Planned slots on route</div>
+                    <div class="metric-footer">S&T, Civil, and OHE slots</div>
+                </div>
+            </div>
+
+            <!-- Time Space String Chart Visualizer -->
+            <section class="glass-panel chart-container">
+                <div class="chart-header">
+                    <h3 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight:600; color: var(--text-main);">Time-Space String Chart (Live Dispatch Console)</h3>
+
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <span class="legend-line" style="background: #10b981;"></span>
+                            <span>Vande Bharat/Rajdhani</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-line" style="background: #38bdf8;"></span>
+                            <span>Superfast/Express</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-line" style="background: #9ca3af; border-top: 1px dashed #9ca3af; height: 0;"></span>
+                            <span>Freight Cargo</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: var(--engg-color);"></span>
+                            <span>Track Block</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: var(--ohe-color);"></span>
+                            <span>OHE Block</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: var(--st-color);"></span>
+                            <span>S&T Block</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Solver Overlay during optimization -->
+                <div class="solver-overlay" id="solverOverlay">
+                    <div class="spinner"></div>
+                    <div class="solver-text">Running AI Optimization Engine...</div>
+                </div>
+
+                <!-- SVG Plot Area -->
+                <svg id="timeSpaceChart" viewBox="0 0 900 500" class="time-space-svg"></svg>
+            </section>
+
+            <!-- Logs & Alerts Bottom Row -->
+            <div class="logs-container">
+
+                <!-- Conflict Alerts -->
+                <section class="glass-panel" style="display: flex; flex-direction: column;">
+                    <h3 class="control-title" style="margin-bottom:12px;">Conflict Detection Alerts</h3>
+                    <div class="alert-board" id="alertList">
+                    </div>
+                </section>
+
+                <!-- Terminal Execution Log -->
+                <section class="glass-panel" style="display: flex; flex-direction: column;">
+                    <h3 class="control-title" style="margin-bottom:12px;">System Terminal Output</h3>
+                    <div class="terminal-log" id="terminalLog">
+                    </div>
+                </section>
+
+            </div>
+
+        </div>
+
+        </main>
+    </div> <!-- End Page: Dashboard -->
+
+    <!-- Page: Maintenance -->
+    <div id="page-maintenance" class="page-view">
+        <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; padding: 24px 28px 12px 28px;">
+            <div>
+                <h2 style="color: var(--text-main); font-family: var(--font-heading); font-size: 1.4rem; margin-bottom: 4px;">Maintenance Planning Register</h2>
+                <p style="color: var(--text-muted); font-size: 0.82rem;">Manage engineering, OHE, and S&T maintenance activities.</p>
+            </div>
+            <div class="page-actions">
+                <button class="btn-primary" onclick="openMaintenanceModal()">+ New Request</button>
+            </div>
+        </div>
+
+        <div style="padding: 0 28px 28px 28px; display: flex; flex-direction: column; gap: 16px;">
+            <div class="glass-panel" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;">
+                <div style="display: flex; gap: 12px;">
+                    <input type="text" id="maintenanceSearch" placeholder="Search tasks..." style="padding: 8px 14px; border-radius: 5px; background: #ffffff; border: 1px solid var(--border-color); color: var(--text-main); width: 240px; font-family: var(--font-body); font-size: 0.85rem;">
+                    <select id="maintenanceDeptFilter" style="padding: 8px 14px; border-radius: 5px; background: #ffffff; border: 1px solid var(--border-color); color: var(--text-main); font-family: var(--font-body); font-size: 0.85rem;">
+                        <option value="all">All Departments</option>
+                        <option value="Engineering">Civil Engineering</option>
+                        <option value="Traction Distribution">Electrical (TRD)</option>
+                        <option value="Signal & Telecommunication">S&T</option>
+                    </select>
+                </div>
+                <button class="btn-secondary" onclick="recalculatePriorities()">Recalculate Priorities</button>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table" w-100>
+                    <thead>
+                        <tr>
+                            <th>Task ID</th>
+                            <th>Department</th>
+                            <th>Work Type</th>
+                            <th>Location</th>
+                            <th>Duration</th>
+                            <th>Priority Score</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="maintenance-tbody">
+                        <tr><td colspan="8" style="text-align: center; padding: 20px;">Loading maintenance tasks...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page: Defects -->
+    <div id="page-defects" class="page-view">
+        <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; padding: 24px 28px 12px 28px;">
+            <div>
+                <h2 style="color: var(--text-main); font-family: var(--font-heading); font-size: 1.4rem; margin-bottom: 4px;">Defect Management Register</h2>
+                <p style="color: var(--text-muted); font-size: 0.82rem;">Track and address infrastructure defects reported across the network.</p>
+            </div>
+            <div class="page-actions">
+                <button class="btn-primary" onclick="openDefectModal()">+ Report Defect</button>
+            </div>
+        </div>
+
+        <div style="padding: 0 28px 28px 28px; display: flex; flex-direction: column; gap: 16px;">
+            <div class="glass-panel" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;">
+                <div style="display: flex; gap: 12px;">
+                    <input type="text" id="defectSearch" placeholder="Search defects..." style="padding: 8px 14px; border-radius: 5px; background: #ffffff; border: 1px solid var(--border-color); color: var(--text-main); width: 240px; font-family: var(--font-body); font-size: 0.85rem;">
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table" w-100>
+                    <thead>
+                        <tr>
+                            <th>Defect ID</th>
+                            <th>Description</th>
+                            <th>Corridor</th>
+                            <th>Severity</th>
+                            <th>Status</th>
+                            <th>Date Reported</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="defects-tbody">
+                        <tr><td colspan="7" style="text-align: center; padding: 20px;">Loading defect logs...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page: Assets -->
+    <div id="page-assets" class="page-view">
+        <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; padding: 24px 28px 12px 28px;">
+            <div>
+                <h2 style="color: var(--text-main); font-family: var(--font-heading); font-size: 1.4rem; margin-bottom: 4px;">Asset Inventory Register</h2>
+                <p style="color: var(--text-muted); font-size: 0.82rem;">Manage track sections, OHE infrastructure, and signaling points.</p>
+            </div>
+        </div>
+
+        <div style="padding: 0 28px 28px 28px; display: flex; flex-direction: column; gap: 16px;">
+            <div class="glass-panel" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;">
+                <div style="display: flex; gap: 12px;">
+                    <input type="text" id="assetSearch" placeholder="Search assets..." style="padding: 8px 14px; border-radius: 5px; background: #ffffff; border: 1px solid var(--border-color); color: var(--text-main); width: 240px; font-family: var(--font-body); font-size: 0.85rem;">
+                    <select id="assetTypeFilter" style="padding: 8px 14px; border-radius: 5px; background: #ffffff; border: 1px solid var(--border-color); color: var(--text-main); font-family: var(--font-body); font-size: 0.85rem;">
+                        <option value="all">All Asset Types</option>
+                        <option value="Track Section">Track Section</option>
+                        <option value="OHE">OHE</option>
+                        <option value="Signal Point">Signal Point</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table" w-100>
+                    <thead>
+                        <tr>
+                            <th>Asset ID</th>
+                            <th>Type</th>
+                            <th>Location</th>
+                            <th>Health Score</th>
+                            <th>Last Maintained</th>
+                        </tr>
+                    </thead>
+                    <tbody id="assets-tbody">
+                        <tr><td colspan="5" style="text-align: center; padding: 20px;">Loading assets...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page: Network Control -->
+    <div id="page-network" class="page-view">
+        <div class="nc-page-header">
+            <h2>Railway Network Control <span class="nc-live-badge">Live</span></h2>
+        </div>
+
+        <div class="nc-layout">
+            <!-- Left: Train Cards -->
+            <div class="nc-train-list">
+                <div class="nc-train-list-header">
+                    <h3>Live Train Status</h3>
+                </div>
+                <div id="nc-train-cards"></div>
+            </div>
+
+            <!-- Center: Map -->
+            <div class="nc-map-area">
+                <div class="nc-map-header">
+                    <h3>◉ Network Map</h3>
+                </div>
+                <div class="nc-map-container" id="nc-map-container">
+                    <!-- Pan/Zoom SVG map injected dynamically by network-control.js -->
+                </div>
+
+            </div>
+
+            <!-- Right: Overview + Conflicts -->
+            <div class="nc-right-col">
+                <div class="nc-overview">
+                    <h3>Network Overview</h3>
+                    <div class="nc-kpi-grid" id="nc-kpi-grid"></div>
+                </div>
+
+                <div class="nc-performance">
+                    <h3>Performance</h3>
+                    <div id="nc-performance-data"></div>
+                </div>
+
+                <div class="nc-conflicts">
+                    <h3>⚠ Active Conflicts</h3>
+                    <div id="nc-conflicts-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nc-toast" id="nc-toast"></div>
+    </div>
+
+        <!-- CRIS Message Page -->
+        <div id="page-cris" class="page-view">
+            <div style="padding: 20px 28px;">
+                <h2 style="font-size: 1.2rem; font-weight: 700; color: #1a237e; margin-bottom: 16px;">📡 CRIS Passenger Advisory & Broadcast</h2>
+                <iframe src="cris_portal.html" style="width: 100%; height: calc(100vh - 180px); border: 1px solid #d0d5dd; border-radius: 8px; background: #fff;" id="crisIframe"></iframe>
+            </div>
+        </div>
+
+    <!-- Government Footer -->
+    <footer class="gov-footer">
+        <div class="gov-footer-left">
+            <strong>RailSync</strong> — Railway Infrastructure Planning & Decision Support
+        </div>
+        <div class="gov-footer-right">
+            <a href="#">About</a> |
+            <a href="#">Help</a> |
+            <a href="#">Accessibility</a> |
+            Prototype • SIH 2026 |
+            Data Source: Demonstration Dataset
+        </div>
+    </footer>
+
+    </div> <!-- End App Content Wrapper -->
+
+    <!-- Floating Info Popup Tooltip -->
+    <div class="info-popup" id="infoPopup"></div>
+
+    <script src="auth.js"></script>
+    <script src="app.js"></script>
+    <script src="maintenance.js"></script>
+    <script src="defects.js"></script>
+    <script src="assets.js"></script>
+    <script src="network-control.js"></script>
+    <script>
+        // Update header date/time
+        function updateHeaderTime() {
+            const el = document.getElementById('headerDateTime');
+            if (el) {
+                const now = new Date();
+                el.textContent = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+            }
+        }
+        updateHeaderTime();
+        setInterval(updateHeaderTime, 60000);
+    </script>
+</body>
+</html>
